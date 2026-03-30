@@ -4,3 +4,8 @@
 - **Hook Version**: 1.02
 - **Date**: 30-03-2026 14:34
 - **Prompt**: implement a simple pyhton application that will displays 10 squares moving around randomly on canvas
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 30-03-2026 14:43
+- **Prompt**: i dont want the tkinter
