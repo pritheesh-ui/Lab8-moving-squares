@@ -29,3 +29,8 @@
 - **Hook Version**: 1.02
 - **Date**: 30-03-2026 14:50
 - **Prompt**: wht should i do to make the py game to work ?
+
+### **New Interaction**
+- **Hook Version**: 1.02
+- **Date**: 30-03-2026 14:52
+- **Prompt**: how to go to the older version

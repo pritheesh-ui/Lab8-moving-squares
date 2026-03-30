@@ -20,3 +20,6 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 30-03-2026 14:50
 - **Prompt**: wht should i do to make the py game to work ?
 
+### 30-03-2026 14:52
+- **Prompt**: how to go to the older version
+
