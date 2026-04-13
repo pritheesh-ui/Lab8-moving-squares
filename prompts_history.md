@@ -50,3 +50,6 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 13-04-2026 14:17
 - **Prompt**: Generate a complete code explorer learning site for this repository at c:\Users\prith\OneDrive\Documents\git16-3\lab8-pygame. Analyze the Python source files (especially main.py) and produce a single polished HTML dashboard with architecture explanation, flow walkthrough, key symbols, movement/animation logic notes, and at least one Mermaid diagram. Include sections for debugging tips, extension ideas, and performance notes suitable for a beginner. Save output files into the repository (prefer a top-level file like code_explorer.html or similar). If assets are needed, create a small folder. Ensure links and references are relative and valid. Return: 1) exact files created/modified, 2) a short summary of the generated content, 3) instructions to open it in browser.
 
+### 13-04-2026 14:46
+- **Prompt**: it shows me no module named py game can u fix that??
+
