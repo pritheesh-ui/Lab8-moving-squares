@@ -71,3 +71,6 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 23-04-2026 14:21
 - **Prompt**: can you check with my code. iwas trying to do the Fleeing behavior, time-based animation, and size-based speeds but i keep getting an error
 
+### 23-04-2026 14:29
+- **Prompt**: can u tell me how to improve the fleeing and chasing behavior
+
