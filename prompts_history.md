@@ -59,3 +59,6 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 23-04-2026 10:39
 - **Prompt**: did you create a "requirements.txt" that includes the required libraries to run this project, and update README to explain everything that has happened ?
 
+### 23-04-2026 11:13
+- **Prompt**: i tried doing my task "two different colours of the two values being swapped" but i ran into some issues can u check whats wrong with my code
+
