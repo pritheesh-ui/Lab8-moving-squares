@@ -68,3 +68,6 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 23-04-2026 11:22
 - **Prompt**: main.py is too big and looks messy. Can you refactor the project and enforce the separation of concerns between UI and Logic? Use several files if needed.
 
+### 23-04-2026 14:21
+- **Prompt**: can you check with my code. iwas trying to do the Fleeing behavior, time-based animation, and size-based speeds but i keep getting an error
+
