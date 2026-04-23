@@ -83,3 +83,6 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 23-04-2026 14:58
 - **Prompt**: did u upload to the journal ?
 
+### 23-04-2026 15:04
+- **Prompt**: also i got import  error can you find whts wrong with my code
+
