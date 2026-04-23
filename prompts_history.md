@@ -56,3 +56,6 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 22-04-2026 23:13
 - **Prompt**: can u add everything to the journal
 
+### 23-04-2026 10:39
+- **Prompt**: did you create a "requirements.txt" that includes the required libraries to run this project, and update README to explain everything that has happened ?
+
