@@ -89,3 +89,6 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 23-04-2026 19:58
 - **Prompt**: look thrugh every file and clean up my code
 
+### 27-04-2026 14:23
+- **Prompt**: generate the architecture documents for this project
+
