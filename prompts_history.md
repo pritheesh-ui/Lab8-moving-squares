@@ -89,15 +89,3 @@ Automatically captured prompt log. Entries are appended in chronological order (
 ### 23-04-2026 19:58
 - **Prompt**: look thrugh every file and clean up my code
 
-### 27-04-2026 14:23
-- **Prompt**: generate the architecture documents for this project
-
-### 27-04-2026 14:31
-- **Prompt**: generate the flash quiz site for this project
-
-### 27-04-2026 14:46
-- **Prompt**: analyse this project and generate a light refactoring plan
-
-### 04-05-2026 09:57
-- **Prompt**: so the now in y project py game the files are seperated based on their functions . can u create a new py with just the copy of all the python files merged. just a copy dont delete the other files or dont rewrite it
-
