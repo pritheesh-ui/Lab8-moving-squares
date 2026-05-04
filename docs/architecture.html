@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture - Random Moving Squares</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #10131a;
+  --panel: #171c26;
+  --panel-2: #1e2532;
+  --text: #e7edf7;
+  --muted: #a8b3c7;
+  --accent: #7dd3fc;
+  --border: #2d394d;
+  --code: #0f1722;
+  --radius: 14px;
+  --max: 1080px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(125, 211, 252, 0.12), transparent 32%),
+    radial-gradient(circle at top right, rgba(148, 163, 184, 0.10), transparent 30%),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+a { color: var(--accent); }
+header {
+  padding: 2.2rem 1.5rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(23, 28, 38, 0.92), rgba(23, 28, 38, 0.72));
+}
+.wrap { max-width: var(--max); margin: 0 auto; }
+h1 { margin: 0; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.04em; }
+.subtitle { margin: 0.4rem 0 0; color: var(--muted); max-width: 70ch; }
+main { padding: 1.5rem; }
+section {
+  max-width: var(--max);
+  margin: 0 auto 1.25rem;
+  background: rgba(23, 28, 38, 0.92);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+}
+h2 { margin: 0 0 0.75rem; font-size: 1.2rem; }
+p { margin: 0.75rem 0 0; color: var(--muted); }
+.diagram { margin-top: 1rem; background: var(--panel-2); border-radius: 12px; padding: 1rem; overflow-x: auto; }
+.note { border-left: 3px solid var(--accent); padding-left: 0.85rem; }
+pre, code { font-family: Consolas, "Courier New", monospace; }
+code { background: var(--code); padding: 0.12rem 0.35rem; border-radius: 6px; color: #cde8ff; }
+footer { max-width: var(--max); margin: 0 auto 2rem; color: var(--muted); padding: 0 1.5rem; font-size: 0.92rem; }
+@media (max-width: 640px) {
+  main { padding: 1rem; }
+  section { padding: 1rem; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Project Architecture</h1>
+    <p class="subtitle">Random Moving Squares uses a small Pygame entrypoint, a focused runtime loop, and a clean split between data, logic, and rendering.</p>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h2>Overview</h2>
+    <p>`main.py` starts the application, `app.py` owns the frame loop, `logic.py` mutates simulation state, `ui.py` owns pygame-facing setup and drawing, `models.py` defines the square data model, and `config.py` centralizes constants.</p>
+  </section>
+
+  <section>
+    <h2>Module Dependency Graph</h2>
+    <div class="diagram mermaid">
+flowchart TD
+    main["main.py"] --> app["app.py"]
+    app --> config["config.py"]
+    app --> logic["logic.py"]
+    app --> ui["ui.py"]
+    logic --> config
+    logic --> models["models.py"]
+    ui --> models
+    app --> pygame["pygame"]
+    logic --> pygame
+    ui --> pygame
+    </div>
+    <p class="note">The project keeps dependencies shallow so the loop in <code>app.py</code> stays readable.</p>
+  </section>
+
+  <section>
+    <h2>Runtime Flow</h2>
+    <div class="diagram mermaid">
+flowchart TD
+    start["Program start"] --> entry["main.py calls app.run()"]
+    entry --> init["Initialize pygame window, clock, font, and squares"]
+    init --> loop["Main game loop"]
+    loop --> quitcheck["Poll events with should_quit()"]
+    quitcheck -->|"Quit event"| shutdown["Exit loop and call pygame.quit()"]
+    quitcheck -->|"No quit event"| timestep["Advance time with clock.tick(FPS)"]
+    timestep --> update["Update movement, lifetimes, rebirth, and collisions"]
+    update --> draw["Clear the screen and draw all squares"]
+    draw --> present["Render FPS text and flip the display"]
+    present --> loop
+    </div>
+    <p class="note">The order is fixed: input first, then simulation, then rendering, then presentation.</p>
+  </section>
+
+  <section>
+    <h2>Function-Level Call Graph</h2>
+    <div class="diagram mermaid">
+flowchart TD
+    main_run["main.py: run()"] --> app_run["app.py: run()"]
+    app_run --> create_screen["ui.py: create_screen()"]
+    create_screen --> pygame_init["pygame.init()"]
+    app_run --> clock["pygame.time.Clock()"]
+    app_run --> font_init["pygame.font.init()"]
+    app_run --> create_squares["logic.py: create_squares()"]
+    create_squares --> create_random_square["logic.py: create_random_square()"]
+    app_run --> should_quit["ui.py: should_quit()"]
+    should_quit --> event_get["pygame.event.get()"]
+    app_run --> update_squares["logic.py: update_squares()"]
+    app_run --> update_lifetimes["logic.py: update_lifetimes()"]
+    app_run --> handle_rebirth["logic.py: handle_rebirth()"]
+    handle_rebirth --> create_random_square
+    app_run --> resolve_collisions_once["logic.py: resolve_collisions_once()"]
+    resolve_collisions_once --> rects["pygame.Rect and colliderect()"]
+    app_run --> draw_squares["ui.py: draw_squares()"]
+    draw_squares --> fill["screen.fill()"]
+    draw_squares --> draw_rect["pygame.draw.rect()"]
+    app_run --> flip["pygame.display.flip()"]
+    </div>
+    <p class="note">`app.run()` is the orchestration point; the helpers keep state mutation and rendering separate.</p>
+  </section>
+
+  <section>
+    <h2>Primary Execution Sequence</h2>
+    <div class="diagram mermaid">
+sequenceDiagram
+    participant M as "main.py"
+    participant A as "app.py run()"
+    participant UI as "ui.py"
+    participant L as "logic.py"
+    participant P as "pygame"
+
+    M->>A: run()
+    A->>UI: create_screen(width, height, title)
+    UI->>P: init()
+    UI->>P: display.set_mode(...)
+    UI->>P: display.set_caption(...)
+    A->>P: time.Clock()
+    A->>P: font.init()
+    A->>L: create_squares(NUM_SQUARES, WIDTH, HEIGHT)
+
+    loop "Each frame"
+        A->>UI: should_quit()
+        UI->>P: event.get()
+        alt "Quit event found"
+            UI-->>A: True
+            A->>P: quit()
+            A-->>M: return
+        else "No quit event"
+            UI-->>A: False
+            A->>P: clock.tick(FPS)
+            A->>L: update_squares(squares, WIDTH, HEIGHT, dt)
+            A->>L: update_lifetimes(squares, dt)
+            A->>L: handle_rebirth(squares, WIDTH, HEIGHT)
+            A->>L: resolve_collisions_once(squares, colliding_pairs)
+            L-->>A: updated collision set
+            A->>UI: draw_squares(screen, squares, BACKGROUND_COLOR)
+            UI->>P: Surface and draw.rect calls
+            A->>P: display.flip()
+        end
+    end
+    </div>
+    <p class="note">The only exit branch is the quit event. Otherwise the loop repeats one more frame.</p>
+  </section>
+
+  <section>
+    <h2>Assumptions</h2>
+    <p>This document is inferred from the current source tree in this workspace. It reflects the current runtime structure, not an imagined refactor or hidden module.</p>
+  </section>
+</main>
+
+<footer>
+  Generated from the current project source. Open this file directly in a browser; Mermaid renders the diagrams in place.
+</footer>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: "dark", securityLevel: "loose" });
+</script>
+</body>
+</html>
