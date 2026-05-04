@@ -13,7 +13,7 @@ MAX_LIFETIME = 180.0
 # ==============================
 # Copied from: models.py
 # ==============================
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, auto
 
 
@@ -40,7 +40,7 @@ class Square:
     max_lifetime: float = 0.0
     alpha: int = 255
     state: State = State.WANDER
-
+    trail: list[tuple[float, float]] = field(default_factory=list)
 
 # ==============================
 # Copied from: ui.py
@@ -74,6 +74,12 @@ def draw_squares(
         pygame.draw.rect(temp_surface, s.color + (s.alpha,), (0, 0, s.size, s.size))
         screen.blit(temp_surface, (int(s.x), int(s.y)))
 
+        for i in range(len(s.trail) - 1):
+            p1 = s.trail[i]
+            p2 = s.trail[i+1]
+            dist = math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+            if dist < WIDTH / 2: 
+                pygame.draw.line(screen, s.color, p1, p2, 2)
 
 # ==============================
 # Copied from: logic.py
@@ -133,95 +139,27 @@ def handle_rebirth(squares: list[Square], width: int, height: int) -> None:
 
 
 def update_squares(squares: list[Square], width: int, height: int, dt: float) -> None:
-    for a in squares:
-        cx_a, cy_a = a.x + a.size / 2, a.y + a.size / 2
-        panic_radius = a.size * PANIC_MULT
-        calm_radius = a.size * CALM_MULT
+    # Exercise 7: Constant for trail history
+    TRAILS_LENGTH = 30 
 
-        closest_predator = None
-        closest_prey = None
-        min_dist_pred = float("inf")
-        min_dist_prey = float("inf")
+    for s in squares:
+        s.x += s.vx * dt
+        s.y += s.vy * dt
 
-        for b in squares:
-            if a is b:
-                continue
+        if s.x > width:
+            s.x = -s.size
+        elif s.x < -s.size:
+            s.x = width
 
-            cx_b, cy_b = b.x + b.size / 2, b.y + b.size / 2
-            dist = math.hypot(cx_a - cx_b, cy_a - cy_b)
+        if s.y > height:
+            s.y = -s.size
+        elif s.y < -s.size:
+            s.y = height
+        center_pos = (s.x + s.size / 2, s.y + s.size / 2)
+        s.trail.append(center_pos)
 
-            if b.size > a.size:
-                if dist < min_dist_pred:
-                    min_dist_pred = dist
-                    closest_predator = b
-            elif b.size < a.size:
-                if dist < min_dist_prey:
-                    min_dist_prey = dist
-                    closest_prey = b
-
-        target = None
-        current_dist = 0.0
-
-        if closest_predator and min_dist_pred < panic_radius:
-            a.state = State.FLEE
-            target = closest_predator
-            current_dist = min_dist_pred
-        elif closest_prey and min_dist_prey < panic_radius:
-            a.state = State.CHASE
-            target = closest_prey
-            current_dist = min_dist_prey
-        else:
-            if a.state == State.FLEE and closest_predator and min_dist_pred < calm_radius:
-                target = closest_predator
-                current_dist = min_dist_pred
-            elif a.state == State.CHASE and closest_prey and min_dist_prey < calm_radius:
-                target = closest_prey
-                current_dist = min_dist_prey
-            else:
-                a.state = State.WANDER
-
-        ax, ay = 0.0, 0.0
-
-        if a.state != State.WANDER and target and current_dist > 1e-6:
-            dx = cx_a - (target.x + target.size / 2)
-            dy = cy_a - (target.y + target.size / 2)
-            ux, uy = dx / current_dist, dy / current_dist
-
-            if a.state == State.FLEE:
-                ax, ay = ux * a.max_accel, uy * a.max_accel
-            elif a.state == State.CHASE:
-                ax, ay = -ux * a.max_accel, -uy * a.max_accel
-
-            noise_factor = 0.05
-        else:
-            noise_factor = 0.3
-
-        ax += random.uniform(-a.max_accel, a.max_accel) * noise_factor
-        ay += random.uniform(-a.max_accel, a.max_accel) * noise_factor
-
-        a.vx += ax * dt
-        a.vy += ay * dt
-
-        speed = math.hypot(a.vx, a.vy)
-        if speed > a.max_speed:
-            a.vx = (a.vx / speed) * a.max_speed
-            a.vy = (a.vy / speed) * a.max_speed
-
-        a.x += a.vx * dt
-        a.y += a.vy * dt
-
-        # Horizontal Wrap
-        if a.x < -a.size:
-            a.x = width
-        elif a.x > width:
-            a.x = -a.size
-
-        # Vertical Wrap 
-        if a.y < -a.size:
-            a.y = height
-        elif a.y > height:
-            a.y = -a.size
-
+        if len(s.trail) > TRAILS_LENGTH:
+            s.trail.pop(0)
 def resolve_collisions_once(
     squares: list[Square],
     colliding_pairs: set[tuple[int, int]],
