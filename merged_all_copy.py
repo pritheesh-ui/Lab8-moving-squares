@@ -41,7 +41,10 @@ class Square:
     alpha: int = 255
     state: State = State.WANDER
     trail: list[tuple[float, float]] = field(default_factory=list)
-
+    target_size: float = 0.0     
+    is_growing: bool = False      
+    def __post_init__(self):
+        self.target_size = float(self.size)
 # ==============================
 # Copied from: ui.py
 # ==============================
@@ -139,27 +142,30 @@ def handle_rebirth(squares: list[Square], width: int, height: int) -> None:
 
 
 def update_squares(squares: list[Square], width: int, height: int, dt: float) -> None:
-    # Exercise 7: Constant for trail history
-    TRAILS_LENGTH = 30 
-
+    GROWTH_DURATION = 0.5  
+    
     for s in squares:
+        if s.is_growing:
+            growth_step = (s.target_size - s.size) * (dt / GROWTH_DURATION)
+            s.size += int(growth_step) if abs(growth_step) >= 1 else (1 if growth_step > 0 else 0)
+            
+            s.max_speed = 5000.0 / s.size
+            s.max_accel = 8000.0 / s.size
+            
+            if s.size >= int(s.target_size):
+                s.size = int(s.target_size)
+                s.is_growing = False
+
         s.x += s.vx * dt
         s.y += s.vy * dt
+        
+        if s.x > width: s.x = -s.size
+        elif s.x < -s.size: s.x = width
+        if s.y > height: s.y = -s.size
+        elif s.y < -s.size: s.y = height
 
-        if s.x > width:
-            s.x = -s.size
-        elif s.x < -s.size:
-            s.x = width
-
-        if s.y > height:
-            s.y = -s.size
-        elif s.y < -s.size:
-            s.y = height
-        center_pos = (s.x + s.size / 2, s.y + s.size / 2)
-        s.trail.append(center_pos)
-
-        if len(s.trail) > TRAILS_LENGTH:
-            s.trail.pop(0)
+        s.trail.append((s.x + s.size / 2, s.y + s.size / 2))
+        if len(s.trail) > 30: s.trail.pop(0)
 def resolve_collisions_once(
     squares: list[Square],
     colliding_pairs: set[tuple[int, int]],
@@ -190,9 +196,11 @@ def resolve_collisions_once(
                         bigger.size = 50
                 bigger.max_speed = 5000.0 / bigger.size 
                 bigger.max_accel = 8000.0 / bigger.size
+                if bigger.size < 50:
+                 bigger.target_size = min(50.0, bigger.size + smaller.size)
+                 bigger.is_growing = True
     return new_colliding_pairs
-
-            
+ 
 
   
 def check_collision(a: Square, b: Square) -> bool:
