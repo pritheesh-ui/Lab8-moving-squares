@@ -95,7 +95,7 @@ def create_random_square(width: int, height: int, size: int) -> Square:
         vx=random.uniform(-max_speed, max_speed),
         vy=random.uniform(-max_speed, max_speed),
         color=(random.randint(80, 255), random.randint(80, 255), random.randint(80, 255)),
-        size=size, # Assign the size here
+        size=size, 
         max_speed=max_speed,
         max_accel=max_accel,
         lifetime=0.0,
