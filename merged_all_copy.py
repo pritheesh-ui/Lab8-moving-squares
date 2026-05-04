@@ -232,11 +232,19 @@ def resolve_collisions_once(
         for j, b in enumerate(squares[i + 1 :], i + 1):
             if not check_collision(a, b):
                 continue
+
             pair = (i, j)
             new_colliding_pairs.add(pair)
 
             if pair not in colliding_pairs:
-                a.color, b.color = b.color, a.color
+                if a.size > b.size:
+                    bigger, smaller = a, b
+                elif b.size > a.size:
+                    bigger, smaller = b, a
+                else:
+                    a.color, b.color = b.color, a.color
+                    continue
+                smaller.lifetime = smaller.max_lifetime 
     return new_colliding_pairs
 
             
