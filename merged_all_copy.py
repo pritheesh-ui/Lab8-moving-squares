@@ -210,12 +210,17 @@ def update_squares(squares: list[Square], width: int, height: int, dt: float) ->
         a.x += a.vx * dt
         a.y += a.vy * dt
 
-        if a.x <= 0 or a.x >= width - a.size:
-            a.vx *= -1
-            a.x = max(0, min(a.x, width - a.size))
-        if a.y <= 0 or a.y >= height - a.size:
-            a.vy *= -1
-            a.y = max(0, min(a.y, height - a.size))
+        # Horizontal Wrap
+        if a.x < -a.size:
+            a.x = width
+        elif a.x > width:
+            a.x = -a.size
+
+        # Vertical Wrap (Now aligned with Horizontal Wrap)
+        if a.y < -a.size:
+            a.y = height
+        elif a.y > height:
+            a.y = -a.size
 
 
 def resolve_collisions_once(
