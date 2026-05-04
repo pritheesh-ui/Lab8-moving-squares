@@ -245,6 +245,13 @@ def resolve_collisions_once(
                     a.color, b.color = b.color, a.color
                     continue
                 smaller.lifetime = smaller.max_lifetime 
+                if bigger.size < 50:
+                    bigger.size += smaller.size
+                    # Ensure it doesn't accidentally exceed 50
+                    if bigger.size > 50:
+                        bigger.size = 50
+                bigger.max_speed = 5000.0 / bigger.size 
+                bigger.max_accel = 8000.0 / bigger.size
     return new_colliding_pairs
 
             
