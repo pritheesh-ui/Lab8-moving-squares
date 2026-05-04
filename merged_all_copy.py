@@ -216,12 +216,11 @@ def update_squares(squares: list[Square], width: int, height: int, dt: float) ->
         elif a.x > width:
             a.x = -a.size
 
-        # Vertical Wrap (Now aligned with Horizontal Wrap)
+        # Vertical Wrap 
         if a.y < -a.size:
             a.y = height
         elif a.y > height:
             a.y = -a.size
-
 
 def resolve_collisions_once(
     squares: list[Square],
@@ -231,43 +230,22 @@ def resolve_collisions_once(
 
     for i, a in enumerate(squares):
         for j, b in enumerate(squares[i + 1 :], i + 1):
-            rect_a = pygame.Rect(int(a.x), int(a.y), a.size, a.size)
-            rect_b = pygame.Rect(int(b.x), int(b.y), b.size, b.size)
-
-            if not rect_a.colliderect(rect_b):
+            if not check_collision(a, b):
                 continue
-
             pair = (i, j)
             new_colliding_pairs.add(pair)
+
             if pair not in colliding_pairs:
                 a.color, b.color = b.color, a.color
-
-            overlap_x = min(a.x + a.size, b.x + b.size) - max(a.x, b.x)
-            overlap_y = min(a.y + a.size, b.y + b.size) - max(a.y, b.y)
-            if overlap_x <= 0 or overlap_y <= 0:
-                continue
-
-            if overlap_x < overlap_y:
-                push = overlap_x / 2.0
-                if a.x + a.size / 2.0 < b.x + b.size / 2.0:
-                    a.x -= push
-                    b.x += push
-                else:
-                    a.x += push
-                    b.x -= push
-                a.vx, b.vx = b.vx, a.vx
-            else:
-                push = overlap_y / 2.0
-                if a.y + a.size / 2.0 < b.y + b.size / 2.0:
-                    a.y -= push
-                    b.y += push
-                else:
-                    a.y += push
-                    b.y -= push
-                a.vy, b.vy = b.vy, a.vy
-
     return new_colliding_pairs
 
+            
+
+  
+def check_collision(a: Square, b: Square) -> bool:
+    rect_a = pygame.Rect(int(a.x), int(a.y), a.size, a.size)
+    rect_b = pygame.Rect(int(b.x), int(b.y), b.size, b.size)
+    return rect_a.colliderect(rect_b)
 
 # ==============================
 # Copied from: app.py
